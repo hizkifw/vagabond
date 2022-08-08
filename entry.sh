@@ -6,8 +6,9 @@ su -c '
   set -e; \
   mkdir -p $HOME/.ssh; \
   curl -fsSL https://github.com/hizkifw.keys > $HOME/.ssh/authorized_keys; \
+  ssh-keyscan github.com gitlab.com > $HOME/.ssh/known_hosts; \
   chmod 700 $HOME/.ssh; \
-  chmod 600 $HOME/.ssh/authorized_keys;' \
+  chmod 600 $HOME/.ssh/{authorized_keys,known_hosts};' \
   nomad
 
 # Copy the ssh folder if needed
