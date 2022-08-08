@@ -2,6 +2,7 @@ version: '3'
 services:
   vagabond:
     build: .
+    restart: unless-stopped
     ports:
     - 2222:22
     volumes:

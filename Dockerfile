@@ -1,4 +1,4 @@
-FROM archlinux:base-devel
+FROM archlinux:base-devel as build
 
 # Install stuff
 RUN \
@@ -112,5 +112,10 @@ VOLUME /etc/ssh
 USER root
 COPY entry.sh /root/entry.sh
 RUN chmod +x /root/entry.sh
+
+# Squash
+FROM scratch as run
+COPY --from=build / /
+
 ENTRYPOINT ["/root/entry.sh"]
 CMD ["/usr/sbin/sshd", "-D"]
