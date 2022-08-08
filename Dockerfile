@@ -18,7 +18,7 @@ RUN \
     --create-home \
     --uid 1000 \
     --shell /bin/zsh \
-    --groups wheel \
+    --groups wheel,docker \
     nomad; \
   chmod 700 /home/nomad; \
   usermod -aG wheel nomad; \
