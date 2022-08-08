@@ -7,7 +7,9 @@ RUN \
   curl wget jq ripgrep direnv bind \
   zsh upx p7zip zstd htop rsync rclone ffmpeg \
   rustup go python python-pip sqlite postgresql-libs \
-  tealdeer openssh lsof highlight
+  tealdeer openssh lsof highlight; \
+  \
+  mv -v /etc/ssh /etc/ssh.bak;
 
 # Create user with sudo privileges
 RUN \
@@ -48,7 +50,7 @@ RUN \
   mkdir -p \
     $HOME/.config \
     $HOME/.local/app/stub; \
-  cd $HOME/workspace; \
+  cd $HOME/.config; \
   git clone https://github.com/hizkifw/dotfiles.git; \
   cd dotfiles; \
   git remote set-url origin git@github.com:hizkifw/dotfiles.git; \
@@ -104,17 +106,11 @@ RUN \
     | gunzip -c > $outdir/rust-analyzer; \
   chmod +x $outdir/rust-analyzer;
 
-# Add my public keys
-RUN \
-  set -ex; \
-  mkdir -p $HOME/.ssh; \
-  curl https://github.com/hizkifw.keys > $HOME/.ssh/authorized_keys; \
-  chmod 700 $HOME/.ssh; \
-  chmod 600 $HOME/.ssh/authorized_keys;
-
 VOLUME /home/nomad/workspace
 VOLUME /etc/ssh
 
 USER root
-ENTRYPOINT ["ssh-keygen", "-A"]
+COPY entry.sh /root/entry.sh
+RUN chmod +x /root/entry.sh
+ENTRYPOINT ["/root/entry.sh"]
 CMD ["/usr/sbin/sshd", "-D"]
