@@ -1,12 +1,13 @@
 FROM archlinux:base-devel
 
 # Install stuff
-RUN sudo pacman -Syu --noconfirm \
-    neofetch neovim tmux git docker docker-compose \
-    curl wget jq ripgrep direnv bind \
-    zsh upx p7zip zstd htop rsync rclone ffmpeg \
-    rustup go python python-pip sqlite postgresql-libs \
-    tealdeer openssh
+RUN \
+  sudo pacman -Syu --noconfirm \
+  neofetch neovim tmux git docker docker-compose \
+  curl wget jq ripgrep direnv bind \
+  zsh upx p7zip zstd htop rsync rclone ffmpeg \
+  rustup go python python-pip sqlite postgresql-libs \
+  tealdeer openssh lsof highlight
 
 # Create user with sudo privileges
 RUN \
@@ -23,6 +24,20 @@ RUN \
 USER nomad
 WORKDIR /home/nomad
 
+# Install yay
+RUN \
+  set -ex; \
+  mkdir -p $HOME/workspace; \
+  cd workspace; \
+  git clone https://aur.archlinux.org/yay-bin.git; \
+  cd yay-bin; \
+  makepkg -si --noconfirm; \
+  cd ..; \
+  rm -rf yay-bin;
+
+# Install yay packages
+RUN yay -S --noconfirm pandoc-bin;
+
 # Run setup script as user
 RUN rustup install stable
 RUN tldr --update
@@ -32,8 +47,7 @@ RUN \
   set -ex; \
   mkdir -p \
     $HOME/.config \
-    $HOME/.local/app/stub \
-    $HOME/workspace; \
+    $HOME/.local/app/stub; \
   cd $HOME/workspace; \
   git clone https://github.com/hizkifw/dotfiles.git; \
   cd dotfiles; \
@@ -90,5 +104,17 @@ RUN \
     | gunzip -c > $outdir/rust-analyzer; \
   chmod +x $outdir/rust-analyzer;
 
+# Add my public keys
+RUN \
+  set -ex; \
+  mkdir -p $HOME/.ssh; \
+  curl https://github.com/hizkifw.keys > $HOME/.ssh/authorized_keys; \
+  chmod 700 $HOME/.ssh; \
+  chmod 600 $HOME/.ssh/authorized_keys;
+
 VOLUME /home/nomad/workspace
-CMD ["/usr/bin/zsh"]
+VOLUME /etc/ssh
+
+USER root
+ENTRYPOINT ["ssh-keygen", "-A"]
+CMD ["/usr/sbin/sshd", "-D"]

@@ -1,0 +1,9 @@
+version: '3'
+services:
+  vagabond:
+    build: .
+    ports:
+    - 2222:22
+    volumes:
+    - ./data/ssh:/etc/ssh
+    - ./data/workspace:/home/nomad/workspace
