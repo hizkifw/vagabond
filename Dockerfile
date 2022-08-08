@@ -106,6 +106,12 @@ RUN \
     | gunzip -c > $outdir/rust-analyzer; \
   chmod +x $outdir/rust-analyzer;
 
+# Link gitconfig
+RUN \
+  ln -s \
+    $HOME/.config/dotfiles/dot/gitconfig \
+    $HOME/.gitconfig
+
 VOLUME /home/nomad/workspace
 VOLUME /etc/ssh
 
