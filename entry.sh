@@ -3,11 +3,15 @@ set -e
 
 echo "Fetching SSH keys"
 su -c '
-  set -e; \
-  mkdir -p $HOME/.ssh; \
-  curl -fsSL https://github.com/hizkifw.keys > $HOME/.ssh/authorized_keys; \
-  ssh-keyscan github.com gitlab.com > $HOME/.ssh/known_hosts; \
-  chmod 700 $HOME/.ssh; \
+  set -e;
+  mkdir -p $HOME/.ssh;
+  ssh-keyscan github.com gitlab.com > $HOME/.ssh/known_hosts;
+  curl -fsSL https://github.com/hizkifw.keys > $HOME/.ssh/authorized_keys;
+  curl -fsSL https://github.com/hizkifw.gpg \
+    | gpg --import 2>&1 | grep " key " | cut -d" " -f3 | tr -d ":" \
+    | xargs -I{} gpg -k {} | grep -oE "[0-9A-F]{40}" | xargs -I{} echo {}:6: \
+    | gpg --import-ownertrust;
+  chmod 700 $HOME/.ssh;
   chmod 600 $HOME/.ssh/{authorized_keys,known_hosts};' \
   nomad
 

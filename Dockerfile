@@ -52,8 +52,7 @@ RUN \
   set -ex; \
   mkdir -p \
     $HOME/.config \
-    $HOME/.local/app/stub \
-    $(gpgconf --list-dir socketdir); \
+    $HOME/.local/app/stub; \
   cd $HOME/.config; \
   git clone https://github.com/hizkifw/dotfiles.git; \
   cd dotfiles; \
@@ -62,6 +61,9 @@ RUN \
   ln -s $(pwd)/dot/zshrc     $HOME/.zshrc; \
   ln -s $(pwd)/dot/antigen   $HOME/.config/antigen; \
   ln -s $(pwd)/dot/nvim      $HOME/.config/nvim;
+
+# Set up gnupg socket dir
+RUN mkdir -p -m 700 $(gpgconf --list-dir socketdir)
 
 # Set up zsh
 RUN zsh -lc '. ~/.zshrc'
