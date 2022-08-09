@@ -8,3 +8,4 @@ services:
     volumes:
     - ./data/ssh:/etc/ssh
     - ./data/workspace:/home/nomad/workspace
+    - /var/run/docker.sock:/var/run/docker.sock

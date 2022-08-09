@@ -9,7 +9,10 @@ RUN \
   rustup go python python-pip sqlite postgresql-libs \
   tealdeer openssh lsof highlight; \
   \
-  mv -v /etc/ssh /etc/ssh.bak;
+  echo 'StreamLocalBindUnlink yes' >> /etc/ssh/sshd_config; \
+  mv -v /etc/ssh /etc/ssh.bak; \
+  ln -s /usr/bin/nvim /usr/local/bin/vim; \
+  ln -s /usr/bin/nvim /usr/local/bin/vi;
 
 # Create user with sudo privileges
 RUN \

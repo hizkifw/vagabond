@@ -25,6 +25,16 @@ fi
 # Ensure the workspace directory has the right permissions
 chown nomad:nomad /home/nomad/workspace
 
+# Update the Docker group ID if needed
+if [ -f /var/run/docker.sock ]; then
+  outside_docker_gid=$(stat -c '%g' /var/run/docker.sock)
+  current_docker_gid=$(getent group docker | cut -d: -f3)
+  if [ "$outside_docker_gid" != "$current_docker_gid" ]; then
+    groupadd -g $outside_docker_gid hostdocker
+    usermod -aG hostdocker nomad
+  fi
+fi
+
 stop() {
     echo "Shutting down sshd"
     pid=$(cat /var/run/sshd/sshd.pid)
