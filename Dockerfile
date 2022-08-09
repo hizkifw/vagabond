@@ -52,7 +52,8 @@ RUN \
   set -ex; \
   mkdir -p \
     $HOME/.config \
-    $HOME/.local/app/stub; \
+    $HOME/.local/app/stub \
+    $(gpgconf --list-dir socketdir); \
   cd $HOME/.config; \
   git clone https://github.com/hizkifw/dotfiles.git; \
   cd dotfiles; \
